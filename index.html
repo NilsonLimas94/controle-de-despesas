@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FinPulse — Sistema offline-first de gestão financeira pessoal com controle de receitas, despesas, categorias e dashboard analítico.">
+    <meta name="theme-color" content="#0b1c47">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FinPulse">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+    <link rel="stylesheet" href="./style.css">
+    <title>FinPulse - Gestão Financeira</title>
+</head>
+<body>
+    <header class="app-header">
+        <div class="brand">
+            <div class="brand-icon" aria-hidden="true">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 17l6-6 4 4 8-8"></path>
+                    <path d="M15 7h6v6"></path>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>FinPulse</h1>
+                <span id="saudacao-usuario">Controle financeiro inteligente</span>
+            </div>
+        </div>
+
+        <div class="header-controls">
+            <label for="filtro-mes" class="sr-only">Filtrar por mês</label>
+            <div class="select-wrapper">
+                <select id="filtro-mes" aria-label="Filtrar movimentações por mês"></select>
+            </div>
+
+            <button
+                type="button"
+                id="btn-instalar-app"
+                class="header-install-btn"
+                title="Instalar FinPulse no dispositivo"
+                aria-label="Instalar FinPulse no dispositivo"
+                hidden
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span>Instalar</span>
+            </button>
+
+            <button
+                type="button"
+                id="btn-editar-perfil"
+                class="header-profile-btn"
+                title="Alterar nome do usuário"
+                aria-label="Alterar nome do usuário"
+            >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <!-- Seção 1: Painéis de resumo financeiro -->
+        <section class="summary-section" aria-label="Resumo financeiro">
+            <article class="summary-card card-balance">
+                <div class="card-header">
+                    <span class="card-label">Saldo atual</span>
+                    <div class="card-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"></path>
+                            <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"></path>
+                        </svg>
+                    </div>
+                </div>
+                <strong class="card-value" id="valor-saldo">R$ 0,00</strong>
+                <span class="card-meta" id="info-saldo">Saldo consolidado</span>
+            </article>
+
+            <article class="summary-card card-income">
+                <div class="card-header">
+                    <span class="card-label">Receitas (Entradas)</span>
+                    <div class="card-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 19V5"></path>
+                            <path d="M5 12l7-7 7 7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <strong class="card-value" id="valor-receitas">R$ 0,00</strong>
+                <span class="card-meta" id="info-receitas">0 entradas registradas</span>
+            </article>
+
+            <article class="summary-card card-expense">
+                <div class="card-header">
+                    <span class="card-label">Despesas (Saídas)</span>
+                    <div class="card-icon" aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 5v14"></path>
+                            <path d="M19 12l-7 7-7-7"></path>
+                        </svg>
+                    </div>
+                </div>
+                <strong class="card-value" id="valor-despesas">R$ 0,00</strong>
+                <span class="card-meta" id="info-despesas">0 saídas registradas</span>
+            </article>
+        </section>
+
+        <!-- Seção 2: Formulário de lançamentos e (na Etapa 4) Histórico lado a lado -->
+        <div class="workspace-grid">
+            <section class="panel-card form-section" aria-labelledby="titulo-formulario">
+                <div class="panel-header">
+                    <h2 id="titulo-formulario">Nova movimentação</h2>
+                    <p class="panel-subtitle">Registre uma receita ou despesa no seu histórico</p>
+                </div>
+
+                <form id="form-movimentacao" class="transaction-form" novalidate>
+                    <!-- Seletor visual de tipo (Despesa / Receita) -->
+                    <fieldset class="type-selector">
+                        <legend class="sr-only">Tipo da movimentação</legend>
+
+                        <input type="radio" name="tipo" id="tipo-despesa" value="expense" checked>
+                        <label for="tipo-despesa" class="type-option type-expense">
+                            <span>Despesa</span>
+                        </label>
+
+                        <input type="radio" name="tipo" id="tipo-receita" value="income">
+                        <label for="tipo-receita" class="type-option type-income">
+                            <span>Receita</span>
+                        </label>
+                    </fieldset>
+
+                    <!-- Descrição -->
+                    <div class="form-group">
+                        <label for="input-descricao">Descrição</label>
+                        <input
+                            type="text"
+                            id="input-descricao"
+                            name="descricao"
+                            placeholder="Ex: Supermercado, Salário, Energia..."
+                            maxlength="80"
+                            required
+                        >
+                    </div>
+
+                    <!-- Valor e Data lado a lado -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="input-valor">Valor</label>
+                            <input
+                                type="text"
+                                inputmode="numeric"
+                                autocomplete="off"
+                                id="input-valor"
+                                name="valor"
+                                placeholder="R$ 0,00"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="input-data">Data</label>
+                            <input
+                                type="date"
+                                id="input-data"
+                                name="data"
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Categoria + criação e gerenciamento inline -->
+                    <div class="form-group">
+                        <div class="label-row">
+                            <label for="select-categoria">Categoria</label>
+                            <button type="button" id="btn-gerenciar-categorias" class="btn-link">
+                                Gerenciar categorias
+                            </button>
+                        </div>
+
+                        <div class="select-wrapper">
+                            <select id="select-categoria" name="categoria" required>
+                                <!-- Preenchido dinamicamente pelo JS conforme o tipo (Despesa/Receita) -->
+                            </select>
+                        </div>
+
+                        <!-- Painel inline: criar nova categoria escolhendo Despesa ou Receita -->
+                        <div id="box-nova-categoria" class="inline-panel" hidden>
+                            <span class="inline-panel-title">Nova categoria</span>
+
+                            <label for="input-nova-categoria" class="sr-only">Nome da nova categoria</label>
+                            <input
+                                type="text"
+                                id="input-nova-categoria"
+                                placeholder="Ex: Academia, Dividendos..."
+                                maxlength="32"
+                            >
+
+                            <fieldset class="mini-type-selector">
+                                <legend class="sr-only">Tipo da nova categoria</legend>
+
+                                <input type="radio" name="tipo-nova-categoria" id="nova-cat-despesa" value="expense" checked>
+                                <label for="nova-cat-despesa" class="mini-type-option mini-expense">Despesa</label>
+
+                                <input type="radio" name="tipo-nova-categoria" id="nova-cat-receita" value="income">
+                                <label for="nova-cat-receita" class="mini-type-option mini-income">Receita</label>
+                            </fieldset>
+
+                            <div class="inline-panel-actions">
+                                <button type="button" id="btn-confirmar-categoria" class="btn-secondary">Salvar categoria</button>
+                                <button type="button" id="btn-cancelar-categoria" class="btn-ghost">Cancelar</button>
+                            </div>
+                        </div>
+
+                        <!-- Painel inline: listar, criar e excluir categorias -->
+                        <div id="box-gerenciar-categorias" class="inline-panel" hidden>
+                            <div class="inline-panel-header">
+                                <span class="inline-panel-title" id="titulo-gerenciar-categorias">Categorias</span>
+                                <button type="button" id="btn-fechar-gerenciar" class="btn-link">Fechar</button>
+                            </div>
+                            <button type="button" id="btn-nova-pelo-gerenciar" class="btn-secondary">
+                                + Nova categoria
+                            </button>
+                            <ul id="lista-gerenciar-categorias" class="category-manage-list">
+                                <!-- Preenchido dinamicamente pelo JS -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Feedback de validação / sucesso -->
+                    <p id="form-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+
+                    <button type="submit" class="btn-primary">
+                        Adicionar movimentação
+                    </button>
+                </form>
+            </section>
+
+            <!-- Seção 3: Histórico de movimentações -->
+            <section class="panel-card history-section" aria-labelledby="titulo-historico">
+                <div class="panel-header history-header">
+                    <div>
+                        <h2 id="titulo-historico">Histórico de movimentações</h2>
+                        <p class="panel-subtitle" id="contador-historico">0 registros no período</p>
+                    </div>
+                    <span class="history-hint">Clique em um item para editar ou excluir</span>
+                </div>
+
+                <div id="historico-vazio" class="history-empty">
+                    <div class="history-empty-icon" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="8" y1="13" x2="16" y2="13"></line>
+                            <line x1="8" y1="17" x2="13" y2="17"></line>
+                        </svg>
+                    </div>
+                    <p>Nenhuma movimentação encontrada.</p>
+                    <span>Adicione uma receita ou despesa no formulário ao lado para começar.</span>
+                </div>
+
+                <ul id="lista-historico" class="history-list">
+                    <!-- Preenchido dinamicamente pelo JS -->
+                </ul>
+            </section>
+        </div>
+
+        <!-- Seção 4: Dashboard Analítico (100% offline-first com gráficos em SVG puro) -->
+        <section class="dashboard-section" aria-labelledby="titulo-dashboard">
+            <div class="dashboard-header">
+                <div>
+                    <h2 id="titulo-dashboard">Dashboard analítico</h2>
+                    <p class="panel-subtitle" id="subtitulo-dashboard">
+                        Visão detalhada do seu comportamento financeiro
+                    </p>
+                </div>
+                <span class="dashboard-badge" id="badge-periodo-dashboard">Todos os períodos</span>
+            </div>
+
+            <!-- Linha 1: 4 Indicadores Inteligentes (KPIs) -->
+            <div class="kpi-grid">
+                <article class="kpi-card">
+                    <span class="kpi-label">Taxa de economia</span>
+                    <strong class="kpi-value" id="kpi-taxa-economia">0%</strong>
+                    <span class="kpi-status" id="kpi-status-economia">Sem dados suficientes</span>
+                </article>
+
+                <article class="kpi-card">
+                    <span class="kpi-label">Renda comprometida</span>
+                    <strong class="kpi-value" id="kpi-comprometimento">0%</strong>
+                    <div class="kpi-progress-track" aria-hidden="true">
+                        <div class="kpi-progress-fill" id="barra-comprometimento"></div>
+                    </div>
+                </article>
+
+                <article class="kpi-card">
+                    <span class="kpi-label">Maior categoria de gasto</span>
+                    <strong class="kpi-value kpi-value-text" id="kpi-maior-categoria">—</strong>
+                    <span class="kpi-meta" id="kpi-maior-categoria-detalhe">Nenhuma despesa no período</span>
+                </article>
+
+                <article class="kpi-card">
+                    <span class="kpi-label">Ticket médio (despesas)</span>
+                    <strong class="kpi-value" id="kpi-ticket-medio">R$ 0,00</strong>
+                    <span class="kpi-meta" id="kpi-ticket-detalhe">Valor médio por saída</span>
+                </article>
+            </div>
+
+            <!-- Linha 2: Gráficos principais lado a lado -->
+            <div class="charts-grid">
+                <!-- Gráfico 1: Rosca (Donut) de despesas por categoria -->
+                <article class="panel-card chart-card">
+                    <div class="panel-header chart-card-header">
+                        <div>
+                            <h3>Despesas por categoria</h3>
+                            <p class="panel-subtitle">Passe o mouse nas fatias para inspecionar</p>
+                        </div>
+                    </div>
+
+                    <div id="grafico-donut-vazio" class="chart-empty">
+                        <p>Adicione despesas para visualizar a distribuição por categoria.</p>
+                    </div>
+
+                    <div id="grafico-donut-conteudo" class="donut-layout" hidden>
+                        <div class="donut-stage">
+                            <svg id="svg-donut-categorias" class="donut-svg" viewBox="0 0 220 220" role="img" aria-label="Gráfico de rosca das despesas por categoria"></svg>
+                            <div class="donut-center">
+                                <span class="donut-center-label" id="donut-centro-titulo">Total saídas</span>
+                                <strong class="donut-center-value" id="donut-centro-valor">R$ 0,00</strong>
+                                <span class="donut-center-percent" id="donut-centro-percentual">100%</span>
+                            </div>
+                        </div>
+
+                        <ul id="legenda-donut-categorias" class="donut-legend">
+                            <!-- Preenchido dinamicamente pelo JS -->
+                        </ul>
+                    </div>
+                </article>
+
+                <!-- Gráfico 2: Comparativo mensal Receitas vs Despesas -->
+                <article class="panel-card chart-card">
+                    <div class="panel-header chart-card-header">
+                        <div>
+                            <h3>Fluxo mensal (Receitas × Despesas)</h3>
+                            <p class="panel-subtitle" id="resumo-hover-mensal">Evolução dos meses registrados no app</p>
+                        </div>
+                        <div class="chart-legend-inline" aria-hidden="true">
+                            <span class="legend-dot is-income">Receitas</span>
+                            <span class="legend-dot is-expense">Despesas</span>
+                        </div>
+                    </div>
+
+                    <div id="grafico-mensal-vazio" class="chart-empty">
+                        <p>Registre receitas ou despesas para acompanhar a evolução mensal.</p>
+                    </div>
+
+                    <div id="grafico-mensal-conteudo" class="bar-chart-wrapper" hidden>
+                        <svg id="svg-fluxo-mensal" class="bar-chart-svg" viewBox="0 0 540 240" role="img" aria-label="Gráfico de barras comparando receitas e despesas por mês"></svg>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Linha 3: Ranking detalhado por categoria com alternância Despesas / Receitas -->
+            <article class="panel-card ranking-card">
+                <div class="ranking-header">
+                    <div>
+                        <h3>Detalhamento por categoria</h3>
+                        <p class="panel-subtitle">Proporção e volume de lançamentos no período</p>
+                    </div>
+
+                    <div class="ranking-tabs" role="tablist" aria-label="Tipo de detalhamento por categoria">
+                        <button type="button" id="tab-rank-despesas" class="ranking-tab is-active" role="tab" aria-selected="true">
+                            Despesas
+                        </button>
+                        <button type="button" id="tab-rank-receitas" class="ranking-tab" role="tab" aria-selected="false">
+                            Receitas
+                        </button>
+                    </div>
+                </div>
+
+                <div id="ranking-vazio" class="chart-empty">
+                    <p>Nenhuma movimentação desse tipo no período selecionado.</p>
+                </div>
+
+                <ul id="lista-ranking-categorias" class="ranking-list">
+                    <!-- Preenchido dinamicamente pelo JS -->
+                </ul>
+            </article>
+        </section>
+    </main>
+
+    <!-- Modal Vidro Fosco (Glassmorphism): Editar / Excluir com confirmação -->
+    <div id="modal-movimentacao" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="titulo-modal" hidden>
+        <div class="modal-glass">
+            <div class="modal-header">
+                <div>
+                    <h2 id="titulo-modal">Detalhes da movimentação</h2>
+                    <p class="panel-subtitle">Edite os dados ou exclua este lançamento</p>
+                </div>
+                <button type="button" id="btn-fechar-modal" class="modal-close-btn" aria-label="Fechar janela">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Formulário de edição -->
+            <form id="form-editar-movimentacao" class="transaction-form" novalidate>
+                <fieldset class="type-selector">
+                    <legend class="sr-only">Tipo da movimentação</legend>
+
+                    <input type="radio" name="editar-tipo" id="editar-tipo-despesa" value="expense">
+                    <label for="editar-tipo-despesa" class="type-option type-expense">Despesa</label>
+
+                    <input type="radio" name="editar-tipo" id="editar-tipo-receita" value="income">
+                    <label for="editar-tipo-receita" class="type-option type-income">Receita</label>
+                </fieldset>
+
+                <div class="form-group">
+                    <label for="editar-descricao">Descrição</label>
+                    <input type="text" id="editar-descricao" maxlength="80" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editar-valor">Valor</label>
+                        <input
+                            type="text"
+                            inputmode="numeric"
+                            autocomplete="off"
+                            id="editar-valor"
+                            placeholder="R$ 0,00"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editar-data">Data</label>
+                        <input type="date" id="editar-data" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="editar-categoria">Categoria</label>
+                    <div class="select-wrapper">
+                        <select id="editar-categoria" required>
+                            <!-- Preenchido dinamicamente pelo JS conforme o tipo -->
+                        </select>
+                    </div>
+                </div>
+
+                <p id="modal-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+
+                <!-- Botões principais de ação -->
+                <div id="modal-acoes-padrao" class="modal-actions">
+                    <button type="button" id="btn-solicitar-exclusao" class="btn-danger-outline">
+                        Excluir
+                    </button>
+                    <button type="submit" id="btn-solicitar-edicao" class="btn-primary">
+                        Salvar alterações
+                    </button>
+                </div>
+
+                <!-- Caixa de confirmação (usada tanto para EDITAR quanto para EXCLUIR) -->
+                <div id="modal-confirmacao" class="modal-confirm-box" hidden>
+                    <p id="modal-confirmacao-texto" class="modal-confirm-text"></p>
+                    <div class="modal-confirm-actions">
+                        <button type="button" id="btn-cancelar-confirmacao" class="btn-ghost">
+                            Voltar
+                        </button>
+                        <button type="button" id="btn-confirmar-acao" class="btn-primary">
+                            Confirmar
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Vidro Fosco Separado: Conta, Histórico e Reset (fora das telas de entrada) -->
+    <div id="modal-perfil" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-perfil" hidden>
+        <div class="modal-glass modal-account">
+            <div class="modal-header">
+                <div>
+                    <h2 id="titulo-modal-perfil">Conta e dados</h2>
+                    <p class="panel-subtitle">Gerencie seu nome, histórico e reset da conta</p>
+                </div>
+                <button type="button" id="btn-fechar-perfil" class="modal-close-btn" aria-label="Fechar janela">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Área principal de ações da conta -->
+            <div id="perfil-acoes-padrao" class="account-sections">
+                <!-- Seção 1: Alterar nome -->
+                <form id="form-editar-perfil" class="access-form" novalidate>
+                    <div class="form-group">
+                        <label for="input-editar-nome">Nome ou apelido</label>
+                        <div class="account-inline-row">
+                            <input
+                                type="text"
+                                id="input-editar-nome"
+                                placeholder="Digite seu nome ou apelido..."
+                                maxlength="40"
+                                autocomplete="given-name"
+                                required
+                            >
+                            <button type="submit" id="btn-salvar-perfil" class="btn-secondary account-inline-btn">
+                                Alterar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <hr class="account-divider">
+
+                <!-- Seção 2: Apagar histórico (por mês ou completo) -->
+                <div class="account-block">
+                    <span class="account-block-title">Limpeza de histórico</span>
+                    <p class="account-block-desc">
+                        Apague as movimentações de um mês específico ou limpe todo o histórico mantendo seu nome e categorias.
+                    </p>
+
+                    <div class="account-inline-row">
+                        <div class="select-wrapper account-select-flex">
+                            <select id="select-mes-apagar" aria-label="Selecionar mês para apagar histórico">
+                                <!-- Preenchido dinamicamente pelo JS -->
+                            </select>
+                        </div>
+                        <button type="button" id="btn-apagar-mes" class="btn-danger-outline account-inline-btn">
+                            Apagar mês
+                        </button>
+                    </div>
+
+                    <button type="button" id="btn-apagar-todo-historico" class="btn-danger-outline account-full-btn">
+                        Apagar todo o histórico
+                    </button>
+                </div>
+
+                <hr class="account-divider">
+
+                <!-- Seção 3: Zona de perigo (Reset permanente) -->
+                <div class="account-danger-zone">
+                    <span class="account-danger-title">Zona de perigo</span>
+                    <p class="account-block-desc">
+                        Resetar a conta apaga permanentemente seu nome, todo o histórico e todas as categorias criadas.
+                    </p>
+                    <button type="button" id="btn-resetar-conta" class="btn-danger-solid account-full-btn">
+                        Resetar conta permanentemente
+                    </button>
+                </div>
+            </div>
+
+            <p id="perfil-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+
+            <!-- Caixa única de confirmação (para alterar nome, apagar mês, apagar tudo ou resetar conta) -->
+            <div id="perfil-confirmacao" class="modal-confirm-box" hidden>
+                <p id="perfil-confirmacao-texto" class="modal-confirm-text"></p>
+                <div class="modal-confirm-actions">
+                    <button type="button" id="btn-cancelar-perfil-confirmacao" class="btn-ghost">
+                        Voltar
+                    </button>
+                    <button type="button" id="btn-confirmar-perfil" class="btn-primary">
+                        Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Telas Iniciais: 1) Cumprimento (apresentação + nome) -> 2) Boas-vindas (Acessar sistema) -->
+    <div id="tela-acesso" class="access-overlay" role="dialog" aria-modal="true" aria-labelledby="titulo-tela-cumprimento" hidden>
+        <div class="access-card">
+            <div id="palco-telas-iniciais" class="t-page-slide access-stage" data-page="1">
+                <!-- Tela 1: Cumprimento (1º acesso — pede nome ou apelido) -->
+                <section id="visao-cumprimento" class="t-page access-view access-greeting-view t-stagger" data-page-id="1">
+                    <div class="access-brand-badge t-stagger-line t-stagger-line--1" aria-hidden="true">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 17l6-6 4 4 8-8"></path>
+                            <path d="M15 7h6v6"></path>
+                        </svg>
+                    </div>
+
+                    <h2 id="titulo-tela-cumprimento" class="t-stagger-line t-stagger-line--2">
+                        Olá, eu sou o <span class="brand-highlight">FinPulse</span>
+                    </h2>
+                    <p class="access-subtitle t-stagger-line t-stagger-line--3">
+                        Seu sistema de gestão financeira pessoal.
+                    </p>
+
+                    <form id="form-cumprimento" class="access-form t-stagger-line t-stagger-line--4" novalidate>
+                        <div class="form-group">
+                            <label for="input-nome-usuario">Como eu posso te chamar?</label>
+                            <input
+                                type="text"
+                                id="input-nome-usuario"
+                                placeholder="Digite seu nome ou apelido..."
+                                maxlength="40"
+                                autocomplete="given-name"
+                                required
+                            >
+                        </div>
+
+                        <p id="acesso-feedback" class="form-feedback" role="status" aria-live="polite"></p>
+
+                        <button type="submit" id="btn-avancar-boas-vindas" class="btn-primary">
+                            Avançar
+                        </button>
+                    </form>
+                </section>
+
+                <!-- Tela 2: Boas-vindas (após avançar e nos próximos acessos) -->
+                <section id="visao-boas-vindas" class="t-page access-view access-welcome-view t-stagger" data-page-id="2">
+                    <div class="access-brand-badge access-welcome-badge t-stagger-line t-stagger-line--1" aria-hidden="true">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M3 17l6-6 4 4 8-8"></path>
+                            <path d="M15 7h6v6"></path>
+                        </svg>
+                    </div>
+
+                    <h2 id="titulo-boas-vindas" class="t-stagger-line t-stagger-line--2">Seja Bem-Vindo(a)!</h2>
+                    <p class="access-subtitle t-stagger-line t-stagger-line--3">
+                        Tudo pronto para cuidar das suas finanças.
+                    </p>
+
+                    <button type="button" id="btn-acessar-sistema" class="btn-primary t-stagger-line t-stagger-line--4">
+                        Acessar sistema
+                    </button>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>
